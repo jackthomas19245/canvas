@@ -1,0 +1,121 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body style="background-color: black;">
+    <canvas id="star-canvas" width="300" height="300"></canvas>
+
+    <script>
+
+        var canvas = document.querySelector("#star-canvas");
+        var width = canvas.width = window.innerWidth;
+        var height = canvas.height = window.innerHeight;
+
+        var ctx = canvas.getContext("2d");
+
+        function Star(x, y, dx, dy, radius) {
+            this.x = x;
+            this.y = y;
+            this.dx = dx;
+            this.dy = dy;
+            this.radius = radius;
+
+            this.draw = function () {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            };
+
+            this.update = function () {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                this.draw();
+
+            };
+        }
+
+        function ShootingStar(sx, sy) {
+            this.sx = sx;
+            this.sy = sy;
+            this.radius = 2;
+
+            this.draw = function () {
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(this.sx, this.sy);
+                ctx.lineTo(this.sx + 100, this.sy + 10);
+                ctx.strokeStyle = "rgba(255,255,255,0.5)";
+                ctx.stroke();
+            };
+
+            this.update = function () {
+                this.sx += 50;
+                this.sy += 5;
+
+                this.draw();
+            };
+        }
+
+        var stars = [];
+        var shootingStars = [];
+
+        // Initial for loop to render stars.
+        for (let i = 0; i < 500; i++) {
+            var x = Math.random() * width;
+            var y = Math.random() * height;
+            var dy = 0;
+            var dx = .5;
+            var radius = Math.random() * 2;
+
+            stars.push(new Star(x, y, dx, dy, radius));
+        }
+
+        // Animation loop.
+        function loop() {
+
+            ctx.clearRect(0, 0, width, height);
+            for (var i = 0; i < stars.length; i++) {
+                stars[i].update();
+            }
+            for (var i = 0; i < shootingStars.length; i++) {
+                shootingStars[i].update();
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+        // Render a new shooting star.
+        (setInterval(function () {
+            var sx = 0;
+            var sy = Math.random() * height;
+
+            shootingStars.push(new ShootingStar(sx, sy));
+        }, 1000));
+
+        //Render new stars to float in from y-axis.
+        (setInterval(function () {
+            for (let i = 0; i < 30; i++) {
+                var x = Math.random() * -10 * 5;
+                var y = Math.random() * height * 2;
+                var dy = 0;
+                var dx = .5;
+                var radius = Math.random() * 2;
+
+                stars.push(new Star(x, y, dx, dy, radius));
+            }
+        }, 1500));
+
+    </script>
+</body>
+
+</html>
